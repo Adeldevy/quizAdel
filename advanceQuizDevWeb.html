@@ -1,0 +1,293 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>QUIZ</title>
+<style>
+   
+
+    body{
+        font-size: 20px;
+        font-family: 'Work Sans', sans-serif;
+        color: #333;
+      font-weight: 300;
+      text-align: center;
+      background-color: #f8f6f0;
+    }
+    h1{
+      font-weight: 300;
+      margin: 0px;
+      padding: 10px;
+      font-size: 20px;
+      background-color: rgb(60, 136, 10);
+      color: #fff;
+    }
+    .question{
+      font-size: 30px;
+      margin-bottom: 10px;
+    }
+    .reponse {
+      margin-bottom: 20px;
+      text-align: left;
+      display: inline-block;
+    }
+    .reponse label{
+      display: block;
+      margin-bottom: 10px;
+    }
+    button{
+      font-family: 'Work Sans', sans-serif;
+        font-size: 22px;
+        background-color: rgb(18, 133, 18);
+        color: #fff;
+        border: 0px;
+        border-radius: 3px;
+        padding: 20px;
+        cursor: pointer;
+        margin-bottom: 20px;
+    }
+    button:hover{
+        background-color: rgb(241, 59, 59);
+    }
+    
+    
+    .slide{
+      position: absolute;
+      left: 0px;
+      top: 0px;
+      width: 100%;
+      z-index: 1;
+      opacity: 0;
+      transition: opacity 0.5s;
+    }
+    .active-slide{
+      opacity: 1;
+      z-index: 2;
+    }
+    .quiz-container{
+      position: relative;
+      height: 200px;
+      margin-top: 40px;
+    }
+    
+</style>
+</head>
+<body>
+    <h1>Quiz Developpement WEB</h1>
+    <div class="quiz-container">
+      <div id="quiz"></div>
+    </div>
+    <button id="precedent">Question precedent</button>
+    <button id="suivant">Question suivante</button>
+    <button id="valider">valider le Quiz</button>
+    <div id="results"></div>
+<script>
+    (function(){
+       
+        function QuizConstruct(){
+          // variable to store the HTML output
+          const output = [];
+      
+          // pour chaque question...
+          myQuestions.forEach(
+            (actuelQuestion, questionNumber) => {
+      
+              // variable de stockage de la liste des reponses possibles
+              const reponse = [];
+      
+              // et pour chaque reponse disponible 
+              for(lettre in actuelQuestion.reponse){
+      
+                // ...html 
+                reponse.push(
+                  `<label>
+                    <input type="radio" name="question${questionNumber}"value="${lettre}">
+                    ${lettre} :
+                    ${actuelQuestion.reponse[lettre]}
+                  </label>`
+                );
+              }
+      
+              // add this question and its reponse to the output
+              output.push(
+                `<div class="slide">
+                  <div class="question"> ${actuelQuestion.question} </div>
+                  <div class="reponse"> ${reponse.join("")} </div>
+                </div>`
+              );
+            }
+          );
+      
+          // finally combine our output list into one string of HTML and put it on the page
+          quizContainer.innerHTML = output.join('');
+        }
+      
+        function showResults(){
+      
+          // gather answer containers from our quiz
+          const answerContainers = quizContainer.querySelectorAll('.reponse');
+      
+          // keep track of user's reponse
+          let numCorrect = 0;
+      
+          // for each question...
+          myQuestions.forEach( (actuelQuestion, questionNumber) => {
+      
+            // find selected answer
+            const answerContainer = answerContainers[questionNumber];
+            const selector = `input[name=question${questionNumber}]:checked`;
+            const userAnswer = (answerContainer.querySelector(selector) || {}).value;
+      
+            // if answer is correct
+            if(userAnswer === actuelQuestion.correctAnswer){
+              // add to the number of correct reponse
+              numCorrect++;
+      
+              // color the reponse green
+              answerContainers[questionNumber].style.color = 'lightgreen';
+            }
+            // if answer is wrong or blank
+            else{
+              // color the reponse red
+              answerContainers[questionNumber].style.color = 'red';
+            }
+          });
+      
+          // show number of correct reponse out of total
+          resultsContainer.innerHTML = `${numCorrect} Bonnes réponse sur ${myQuestions.length}`;
+        }
+      
+        function showSlide(n) {
+          slides[actuelSlide].classList.remove('active-slide');
+          slides[n].classList.add('active-slide');
+          actuelSlide = n;
+          if(actuelSlide === 0){
+            previousButton.style.display = 'none';
+          }
+          else{
+            previousButton.style.display = 'inline-block';
+          }
+          if(actuelSlide === slides.length-1){
+            nextButton.style.display = 'none';
+            submitButton.style.display = 'inline-block';
+          }
+          else{
+            nextButton.style.display = 'inline-block';
+            submitButton.style.display = 'none';
+          }
+        }
+      
+        function showNextSlide() {
+          showSlide(actuelSlide + 1);
+        }
+      
+        function showPreviousSlide() {
+          showSlide(actuelSlide - 1);
+        }
+      
+        // Question de quiz
+        const quizContainer = document.getElementById('quiz');
+        const resultsContainer = document.getElementById('results');
+        const submitButton = document.getElementById('valider');
+        const myQuestions = [
+          {
+            question: "Que signifie les trois lettres www dans un URL ?",
+            reponse: {
+              a: "Weird Wordprocessors Web",
+              b: "Weekly Wide Web",
+              c: " World Wide Web"
+            },
+            correctAnswer: "c"
+          },
+          {
+            question: "Que signifie CSS ?",
+            reponse: {
+              a: "Cascading Style Sheets",
+              b: "Create Simple Samples",
+              c: "Choucroute et Saucisses d'Alsace"
+            },
+            correctAnswer: "a"
+          },
+          {
+            question: "Où est-il conseillé de placer le code CSS ?",
+            reponse: {
+              a: "Dans le body",
+              b: "Entre les balises <head>",
+              c: "dans une clef usb",
+              d: "Dans un fichier externe utilisable pour plusieurs pages"
+            },
+            correctAnswer: "d"
+          },
+          {
+            question: "De quoi a-t-on besoin pour exécuter du PHP ?",
+            reponse: {
+              a: "Un serveur MySQL",
+              b: "Un serveur DNS",
+              c: "Un interpréteur",
+              d: "un compositeur"
+            },
+            correctAnswer: "c"
+          },
+
+          {
+            question: "Que signifie PHP ?",
+            reponse: {
+              a: "Perl Hypertext PreprocessorL",
+              b: "Personal Hypertext Preprocessor",
+              c: "PHP: Hypertext Preprocessor",
+              d: "Programme Hyper Professionnel"
+            },
+            correctAnswer: "b"
+          },
+          {
+            question: "En PHP, par quoi commence-t-on l'écriture d'un script ?",
+            reponse: {
+              a: "<php",
+              b: "<html/php",
+              c: "<?php ",
+              d: "<@ "
+            },
+            correctAnswer: "c"
+          },
+          {
+            question: "Comment vérifie-t-on l'égalité de deux variables ?",
+            reponse: {
+              a: "$a = $b",
+              b: "$a and $b",
+              c: " $a != $b",
+              d: "$a == $b"
+            },
+            correctAnswer: "d"
+          }
+
+
+
+
+
+
+
+
+        ];
+      
+        // Kick things off
+        QuizConstruct();
+      
+        // Pagination
+        const previousButton = document.getElementById("precedent");
+        const nextButton = document.getElementById("suivant");
+        const slides = document.querySelectorAll(".slide");
+        let actuelSlide = 0;
+      
+        // Show the first slide
+        showSlide(actuelSlide);
+      
+        // Event listeners
+        submitButton.addEventListener('click', showResults);
+        previousButton.addEventListener("click", showPreviousSlide);
+        nextButton.addEventListener("click", showNextSlide);
+      })();
+      
+</script>
+
+</body>
+</html>
+

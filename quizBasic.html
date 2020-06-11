@@ -1,0 +1,306 @@
+<!DOCTYPE html>
+	<html>
+	<title>QUIZ</title>
+	<meta charset="UTF-8">
+	<meta name="viewport" content="width=device-width, initial-scale=1">
+	<link rel="stylesheet" href="https://www.w3schools.com/w3css/4/w3.css">
+	<link rel="stylesheet" href="https://fonts.googleapis.com/css?family=Raleway">
+	<link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/4.7.0/css/font-awesome.min.css">
+	<link rel="stylesheet" href="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/css/bootstrap.min.css">
+
+
+<body>
+   <style>
+    body{
+
+      font-weight: 200;
+     
+      background-color: #ebe9e3;
+    }
+    h1{
+      font-weight: 300;
+      margin: 0px;
+      padding: 10px;
+      font-size: 20px;
+      background-color: rgb(60, 136, 10);
+      color: #fff;
+    }
+    .question{
+      font-size: 20px;
+      margin-bottom: 15px;
+    }
+    .reponse {
+      margin-bottom: 20px;
+      text-align: left;
+      display: inline-block;
+    }
+    .reponse label{
+      display: block;
+      margin-bottom: 10px;
+    }
+    button{
+        font-family: 'Work Sans', sans-serif;
+          font-size: 18px;
+          background-color: rgb(38, 39, 38);
+          color: #fff;
+          border: 0px;
+          border-radius: 3px;
+          padding: 15px;
+          cursor: pointer;
+          margin-bottom: 15px;
+      }
+      button:hover{
+          background-color: rgb(241, 59, 59);
+      }
+    
+</style> 
+
+
+<div class="w3-top">
+    <div class="w3-bar w3-white w3-card" id="myNavbar">
+      <a href="#home" class="w3-bar-item w3-button w3-wide"><strong> QUIZ</strong></a>
+
+      <div class="w3-right w3-hide-small">
+  
+        <a  class="w3-bar-item w3-button" href="index.html" ><i class="fa fa-user"></i> déconnexion</a>
+        <a  class="w3-bar-item w3-button" href="pageMembre.html" ><i class="fa fa-home"></i> Accueil</a>
+      
+      </div>
+      <a href="javascript:void(0)" class="w3-bar-item w3-button w3-right w3-hide-large w3-hide-medium" onclick="w3_open()">
+        <i class="fa fa-bars"></i>
+      </a>
+    </div>
+  </div>
+  
+  <!-- Sidebar on small screens when clicking the menu icon -->
+  <nav class="w3-sidebar w3-bar-block w3-black w3-card w3-animate-left w3-hide-medium w3-hide-large" style="display:none" id="mySidebar">
+    <a href="javascript:void(0)" onclick="w3_close()" class="w3-bar-item w3-button w3-large w3-padding-16">Close ×</a>
+  
+    <a  onclick="w3_close()" class="w3-bar-item w3-button" href="pageMembre.html" >Accueil</a>
+    <a  onclick="w3_close()" class="w3-bar-item w3-button" href="index.html" >Déconnexion</a>
+   
+  </nav><br><br>
+  
+
+
+
+
+<h1>Quiz Developpement WEB</h1>
+<div id="quiz"></div>
+<button id="submit">Valider le Quiz</button>
+<div id="resultat"></div>
+<div id="message"></div>
+
+
+<script>
+    (function(){
+        function QuizConstruct(){
+          // variable to store the HTML output
+          const output = [];
+      
+          // for each question...
+          myQuestions.forEach(
+            (currentQuestion, questionNumber) => {
+      
+              // mettre les reponse dans un tableau
+              const reponse = [];
+      
+              // et pour chaque bonne reponse 
+              for(lettre in currentQuestion.reponse){
+      
+                // ...on ajoute cela au html 
+                reponse.push(
+                  `<label>
+                    <input type="radio" name="question${questionNumber}" value="${lettre}">
+                    ${lettre} :
+                    ${currentQuestion.reponse[lettre]}
+                  </label>`
+                );
+              }
+      
+              // enfin combiner notre liste de sortie en une seule chaîne HTML et la mettre sur la page
+              output.push(
+                `<div class="question"> ${currentQuestion.question} </div>
+                <div class="reponse"> ${reponse.join('')} </div>`
+              );
+            }
+          );
+      
+          // finally combine our output list into one string of HTML and put it on the page
+          quizContainer.innerHTML = output.join('');
+        }
+      
+        function resultats(){
+      
+          //rassembler les resultats
+          const resultatFormulaires = quizContainer.querySelectorAll('.reponse');
+      
+          // initialiser la variable bonne reponse à 0
+          let numCorrect = 0;
+      
+          //pour chaque question...
+          myQuestions.forEach( (currentQuestion, questionNumber) => {
+      
+            // prendre la reponse selectionnée 
+            const resultatForm = resultatFormulaires[questionNumber];
+            const selector = `input[name=question${questionNumber}]:checked`;
+            const userReponse = (resultatForm.querySelector(selector) || {}).value;
+      
+            // si la reponse est bonne 
+            if(userReponse === currentQuestion.bonneReponse){
+              // ajouter un à la variable numCorrect
+              numCorrect++;
+      
+              //css  la bonne reponse en vert 
+              resultatFormulaires[questionNumber].style.color = 'lightgreen';
+            }
+           
+            else{
+              // css la mouvaise reponse en rouge
+              resultatFormulaires[questionNumber].style.color = 'red';
+            }
+          });
+      
+          // montrer les résultats 
+          resultatContainer.innerHTML = `${numCorrect} Bonnes reponses ${myQuestions.length}`;
+         
+          // afficher une appréciation ///ne marche pas correctement ....
+          if (numCorrect == 0) {
+
+            text = "t'es con ou quoi ? ...no comment";
+            
+        } else if (numCorrect >=10%myQuestions && numCorrect< 30%myQuestions ){
+    
+            $message = "wow tu es effectivement bien plus con que prevus" ;
+            
+        } else if (numCorrect == 30%myQuestions ){
+    
+           text = ".presque  mais  cest pas assez, retournes chez ta mere";
+            
+        } else  {
+           text = " pas mal continue comme ca paumé";
+            
+        }
+        
+        document.getElementById("message").innerHTML = text;
+
+         
+         
+        }
+      
+        const quizContainer = document.getElementById('quiz');
+        const resultatContainer = document.getElementById('resultat');
+        const submitButton = document.getElementById('submit');
+
+        const myQuestions = [
+        {
+            question: "Que signifie les trois lettres www dans un URL ?",
+            reponse: {
+              a: "Weird Wordprocessors Web",
+              b: "Weekly Wide Web",
+              c: " World Wide Web"
+            },
+            bonneReponse: "c"
+          },
+          {
+            question: "Que signifie CSS ?",
+            reponse: {
+              a: "Cascading Style Sheets",
+              b: "Create Simple Samples",
+              c: "Choucroute et Saucisses d'Alsace"
+            },
+            bonneReponse: "a"
+          },
+          {
+            question: "Où est-il conseillé de placer le code CSS ?",
+            reponse: {
+              a: "Dans le body",
+              b: "Entre les balises <head>",
+              c: "dans une clef usb",
+              d: "Dans un fichier externe utilisable pour plusieurs pages"
+            },
+            bonneReponse: "d"
+          },
+          {
+            question: "De quoi a-t-on besoin pour exécuter du PHP ?",
+            reponse: {
+              a: "Un serveur MySQL",
+              b: "Un serveur DNS",
+              c: "Un interpréteur",
+              d: "un compositeur"
+            },
+            bonneReponse: "c"
+          },
+
+          {
+            question: "Que signifie PHP ?",
+            reponse: {
+              a: "Perl Hypertext PreprocessorL",
+              b: "Personal Hypertext Preprocessor",
+              c: "PHP: Hypertext Preprocessor",
+              d: "Programme Hyper Professionnel"
+            },
+            bonneReponse: "c"
+          },
+          
+          {
+            question: "Comment vérifie-t-on l'égalité de deux variables ?",
+            reponse: {
+              a: "$a = $b",
+              b: "$a and $b",
+              c: " $a != $b",
+              d: "$a == $b"
+            },
+            bonneReponse: "d"
+          },
+          {
+            question: "Comment vérifie-t-on l'égalité de deux variables ?",
+            reponse: {
+              a: "$a = $b",
+              b: "$a and $b",
+              c: " $a != $b",
+              d: "$a == $b"
+            },
+            bonneReponse: "d"
+          }
+
+
+
+        ];
+      
+       // commencer la fonction 
+        QuizConstruct();
+      
+        //afficher le resulat en cliquant sur button valider 
+        submitButton.addEventListener('click', resultats);
+      })();
+      
+
+
+      var mySidebar = document.getElementById("mySidebar");
+	
+	function w3_open() {
+	  if (mySidebar.style.display === 'block') {
+		mySidebar.style.display = 'none';
+	  } else {
+		mySidebar.style.display = 'block';
+	  }
+	}
+	
+	// Close the sidebar with the close button
+	function w3_close() {
+		mySidebar.style.display = "none";
+	}
+
+</script>
+
+	
+	
+
+	  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+	  <script src="https://maxcdn.bootstrapcdn.com/bootstrap/3.4.1/js/bootstrap.min.js"></script>
+
+
+</body>
+</html>
+
